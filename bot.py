@@ -26,6 +26,10 @@ MAX_CONTEXT = 5
 COOLDOWN_SECONDS = 3
 MAX_MESSAGE_LENGTH = 2000
 
+# 금지 키워드 (API 호출 전 차단)
+BLOCKED_KEYWORDS = ["해마 이모지", "seahorse emoji", "해마이모지", "해마 emoji"]
+BLOCKED_RESPONSE = "표준 유니코드 목록에 존재하지 않습니다."
+
 # 상태 저장 (메모리)
 conversation_history = defaultdict(lambda: deque(maxlen=MAX_CONTEXT))
 last_request_time = defaultdict(float)
@@ -74,6 +78,12 @@ def split_message(text: str, max_length: int = MAX_MESSAGE_LENGTH) -> list:
 
 async def call_groq_api(channel_id: int, user_message: str) -> str:
     """Groq API 호출 및 응답 반환"""
+    # 금지된 키워드 체크
+    message_lower = user_message.lower()
+    for keyword in BLOCKED_KEYWORDS:
+        if keyword in message_lower:
+            return BLOCKED_RESPONSE
+    
     # 컨텍스트에 현재 메시지 추가
     conversation_history[channel_id].append({
         "role": "user",

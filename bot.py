@@ -48,24 +48,54 @@ SYSTEM_PROMPT = """너는 신짱구야. 짱구는 못말려의 5살 장난꾸러
 - 이전 대화 맥락 고려해서 답변
 - 한국어로 대답"""
 
-MAX_CONTEXT = 5
+MAX_CONTEXT = 10
 COOLDOWN_SECONDS = 3
 MAX_MESSAGE_LENGTH = 2000
 
-# 금지 키워드 (API 호출 전 차단 - AI 모델 오류 유발 방지)
-BLOCKED_KEYWORDS = [
+# 금지 키워드 - 해마 관련 (API 호출 전 차단 - AI 모델 오류 유발 방지)
+BLOCKED_SEAHORSE_KEYWORDS = [
     # 이모지 조합
     "해마 이모지", "이모지 해마", "해마이모지",
     "해마 emoji", "emoji 해마",
     # 이모티콘 조합
     "해마 이모티콘", "이모티콘 해마", "해마이모티콘",
-    # 아이콘/그림
+    # 아이콘/그림/캐릭터
     "해마 아이콘", "아이콘 해마", "해마아이콘",
     "해마 그림", "그림 해마", "해마그림",
+    "해마 캐릭터", "캐릭터 해마", "해마캐릭터",
+    # 기호/심볼
+    "해마 기호", "기호 해마", "해마기호",
+    "해마 심볼", "심볼 해마", "해마심볼",
+    # 유니코드
+    "해마 유니코드", "유니코드 해마", "해마유니코드",
     # 영어
     "seahorse emoji", "seahorse emoticon", "seahorse icon",
+    "seahorse symbol", "seahorse unicode", "seahorse character",
 ]
-BLOCKED_RESPONSE = "⚠️ 이 질문은 AI 모델 오류를 유발해서 무시됩니다. (해마 이모지/이모티콘은 유니코드에 존재하지 않습니다)"
+BLOCKED_SEAHORSE_RESPONSE = "어~ 그거요? 해마 이모지는 세상에 없대요! 엄마가 그랬어요~"
+
+# 금지 키워드 - 프롬프트 요청 (시스템 정보 보호)
+BLOCKED_PROMPT_KEYWORDS = [
+    # 한글 - 프롬프트
+    "프롬프트", "시스템 프롬프트", "시스템프롬프트",
+    "프롬프트 알려", "프롬프트 보여", "프롬프트 뭐야",
+    # 한글 - 지시/명령
+    "지시문", "지시사항", "명령어 알려", "명령문",
+    # 한글 - 설정
+    "설정 알려", "설정 보여", "너의 설정", "네 설정", "니 설정",
+    "봇 설정", "챗봇 설정",
+    # 한글 - 작동 원리
+    "어떻게 작동", "어떻게 동작", "원리 알려", "원리 뭐야",
+    "어떻게 프로그래밍", "어떻게 만들어",
+    # 한글 - 입력/역할
+    "뭐라고 입력", "뭘 입력", "역할 알려", "역할 뭐야",
+    # 영어
+    "prompt", "system prompt", "systemprompt",
+    "instruction", "your setting", "your instruction",
+    "how do you work", "how are you programmed",
+    "show me your prompt", "what is your prompt",
+]
+BLOCKED_PROMPT_RESPONSE = "에이~ 그건 비밀이에요! 짱구만 아는 거라고요~"
 
 # 상태 저장 (메모리)
 conversation_history = defaultdict(lambda: deque(maxlen=MAX_CONTEXT))
@@ -117,9 +147,16 @@ async def call_groq_api(channel_id: int, user_message: str) -> str:
     """Groq API 호출 및 응답 반환"""
     # 금지된 키워드 체크
     message_lower = user_message.lower()
-    for keyword in BLOCKED_KEYWORDS:
+    
+    # 해마 관련 키워드 체크
+    for keyword in BLOCKED_SEAHORSE_KEYWORDS:
         if keyword in message_lower:
-            return BLOCKED_RESPONSE
+            return BLOCKED_SEAHORSE_RESPONSE
+    
+    # 프롬프트 요청 키워드 체크
+    for keyword in BLOCKED_PROMPT_KEYWORDS:
+        if keyword in message_lower:
+            return BLOCKED_PROMPT_RESPONSE
     
     # 컨텍스트에 현재 메시지 추가
     conversation_history[channel_id].append({

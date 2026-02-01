@@ -71,6 +71,7 @@ BLOCKED_SEAHORSE_KEYWORDS = [
     # 영어
     "seahorse emoji", "seahorse emoticon", "seahorse icon",
     "seahorse symbol", "seahorse unicode", "seahorse character",
+    "seahorse",
 ]
 BLOCKED_SEAHORSE_RESPONSE = "어~ 그거요? 해마 이모지는 세상에 없대요! 엄마가 그랬어요~"
 

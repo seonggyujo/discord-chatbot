@@ -14,7 +14,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # 설정
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-120b"
 SYSTEM_PROMPT = """너는 디스코드 챗봇이야.
 질문에 대한 답변만 해. 핵심만 짧게 말해.
 최대 300자 이내로 답변해.
@@ -202,7 +202,7 @@ async def chat_command(ctx, *, message: str = ""):
 async def info_command(ctx):
     """봇 정보 표시"""
     info_text = """**[봇 정보]**
-모델: llama-3.3-70b-versatile
+모델: openai/gpt-oss-120b
 API: Groq (무료 티어)
 개발자: seonggyujo
 이메일: whtjdrb020@gmail.com

@@ -26,9 +26,20 @@ MAX_CONTEXT = 5
 COOLDOWN_SECONDS = 3
 MAX_MESSAGE_LENGTH = 2000
 
-# 금지 키워드 (API 호출 전 차단)
-BLOCKED_KEYWORDS = ["해마 이모지", "seahorse emoji", "해마이모지", "해마 emoji"]
-BLOCKED_RESPONSE = "표준 유니코드 목록에 존재하지 않습니다."
+# 금지 키워드 (API 호출 전 차단 - AI 모델 오류 유발 방지)
+BLOCKED_KEYWORDS = [
+    # 이모지 조합
+    "해마 이모지", "이모지 해마", "해마이모지",
+    "해마 emoji", "emoji 해마",
+    # 이모티콘 조합
+    "해마 이모티콘", "이모티콘 해마", "해마이모티콘",
+    # 아이콘/그림
+    "해마 아이콘", "아이콘 해마", "해마아이콘",
+    "해마 그림", "그림 해마", "해마그림",
+    # 영어
+    "seahorse emoji", "seahorse emoticon", "seahorse icon",
+]
+BLOCKED_RESPONSE = "⚠️ 이 질문은 AI 모델 오류를 유발해서 무시됩니다. (해마 이모지/이모티콘은 유니코드에 존재하지 않습니다)"
 
 # 상태 저장 (메모리)
 conversation_history = defaultdict(lambda: deque(maxlen=MAX_CONTEXT))
